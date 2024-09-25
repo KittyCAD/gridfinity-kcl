@@ -1,0 +1,175 @@
+// Gridfinity Bins
+// Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion
+
+// Number of bins in each direction
+const countBinWidth = 2
+const countBinLength = 2
+const countBinHeight = 2
+
+// Define constants in millimeters (mm)
+const binLength = 41.5
+const binHeight = 7.0
+const binBaseLength = 2.95
+const binTol = 0.25
+const binThk = 1.2
+const cornerRadius = 3.75
+const firstStep = 0.8
+const secondStep = 1.8
+const thirdStep = 2.15
+const magOuterDiam = 6.5
+const magOffset = 4.8
+const magDepth = 2.4
+
+// The total height of the baseplate is a summation of the vertical heights of the baseplate steps
+let height = firstStep + secondStep + thirdStep
+
+// define a function which builds the profile of the baseplate bin
+fn face = (plane) => {
+  const faceSketch = startSketchOn(plane)
+    |> startProfileAt([binBaseLength + binTol, 0], %)
+    |> yLine(height, %)
+    |> xLine(-binBaseLength, %)
+    |> angledLineOfYLength({ angle: -45, length: thirdStep }, %)
+    |> yLine(-secondStep, %)
+    |> angledLineOfYLength({ angle: -45, length: firstStep }, %)
+    |> close(%)
+  return faceSketch
+}
+
+// extrude a single side of the bin
+const singleSide = extrude(binLength - (cornerRadius * 2), face(offsetPlane("YZ", cornerRadius + binTol)))
+
+// create the other sides of the bin by using a circular pattern
+const sides = patternCircular3d({
+  arcDegrees: 360,
+  axis: [0, 0, 1],
+  center: [
+    (binLength + 2 * binTol) / 2,
+    (binLength + 2 * binTol) / 2,
+    0
+  ],
+  repetitions: 3,
+  rotateDuplicates: true
+}, singleSide)
+
+// define an axis axis000
+const axis000 = {
+  custom: {
+    axis: [0.0, 1.0, 0.0],
+    origin: [
+      cornerRadius + binTol,
+      cornerRadius + binTol,
+      0.0
+    ]
+  }
+}
+
+// create a single corner of the bin
+const singleCorner = revolve({ angle: -90, axis: axis000 }, face(offsetPlane("YZ", cornerRadius + binTol)))
+
+// create the corners of the bin
+const corners = patternCircular3d({
+  arcDegrees: 360,
+  axis: [0, 0, 1],
+  center: [
+    (binLength + 2 * binTol) / 2,
+    (binLength + 2 * binTol) / 2,
+    0
+  ],
+  repetitions: 3,
+  rotateDuplicates: true
+}, singleCorner)
+
+const singleBinFill = startSketchOn("XY")
+  |> startProfileAt([
+       binBaseLength + binTol,
+       binBaseLength + binTol
+     ], %)
+  |> line([binLength - (binBaseLength * 2), 0], %, $line000)
+  |> line([0, binLength - (binBaseLength * 2)], %, $line001)
+  |> xLineTo(profileStartX(%), %, $line002)
+  |> close(%, $line003)
+  |> extrude(height, %)
+  |> fillet({
+       radius: firstStep,
+       tags: [
+         getNextAdjacentEdge(line000),
+         getPreviousAdjacentEdge(line000),
+         getNextAdjacentEdge(line002),
+         getPreviousAdjacentEdge(line002)
+       ]
+     }, %)
+
+const magCutout000 = startSketchOn(singleBinFill, "start")
+  |> circle({
+       center: [
+         -magOffset - binBaseLength - binTol,
+         magOffset + binBaseLength + binTol
+       ],
+       radius: magOuterDiam / 2
+     }, %)
+  |> patternCircular2d({
+       arcDegrees: 360,
+       center: [
+         (-binLength + 2 * binTol) / 2,
+         (binLength + 2 * binTol) / 2
+       ],
+       repetitions: 3,
+       rotateDuplicates: true
+     }, %)
+  |> extrude(-magDepth, %)
+
+// create the baseplate by patterning sides
+const binSides = patternLinear3d({
+       axis: [1.0, 0.0, 0.0],
+       repetitions: countBinWidth - 1,
+       distance: binLength + binTol * 2
+     }, sides)
+  |> patternLinear3d({
+       axis: [0.0, 1.0, 0.0],
+       repetitions: countBinLength - 1,
+       distance: binLength + binTol * 2
+     }, %)
+
+// create the corners of the baseplate by patterning the corners
+const binCorners = patternLinear3d({
+       axis: [1.0, 0.0, 0.0],
+       repetitions: countBinWidth - 1,
+       distance: binLength + binTol * 2
+     }, corners)
+  |> patternLinear3d({
+       axis: [0.0, 1.0, 0.0],
+       repetitions: countBinLength - 1,
+       distance: binLength + binTol * 2
+     }, %)
+
+// create the fill of the bin by patterning the corners
+const binFill = patternLinear3d({
+       axis: [1.0, 0.0, 0.0],
+       repetitions: countBinWidth - 1,
+       distance: binLength + binTol * 2
+     }, singleBinFill)
+  |> patternLinear3d({
+       axis: [0.0, 1.0, 0.0],
+       repetitions: countBinLength - 1,
+       distance: binLength + binTol * 2
+     }, %)
+
+//
+const binTop = startSketchOn(offsetPlane("XY", height))
+  |> startProfileAt([0, 0], %)
+  |> xLine((binLength + 2 * binTol) * countBinWidth, %, $line010)
+  |> yLine((binLength + 2 * binTol) * countBinLength, %, $line011)
+  |> xLineTo(profileStartX(%), %, $line012)
+  |> close(%, $line013)
+  |> extrude(binHeight * countBinHeight, %)
+  |> fillet({
+       radius: cornerRadius,
+       tags: [
+         getNextAdjacentEdge(line010),
+         getPreviousAdjacentEdge(line010),
+         getNextAdjacentEdge(line012),
+         getPreviousAdjacentEdge(line012)
+       ]
+     }, %)
+  |> shell({ faces: ["end"], thickness: binThk }, %)
