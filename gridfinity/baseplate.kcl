@@ -3,7 +3,7 @@
 
 // Number of bins in each direction
 const countBinWidth = 2
-const countBinLength = 2
+const countBinLength = 3
 
 // Define constants in millimeters (mm)
 const binLength = 42.0
