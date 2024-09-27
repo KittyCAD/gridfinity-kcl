@@ -46,8 +46,8 @@ const sides = patternCircular3d({
 // define an axis axis000
 const axis000 = {
   custom: {
-    axis: [0.0, 1.0, 0.0],
-    origin: [cornerRadius, cornerRadius, 0.0]
+    axis: [0.0, 1.0],
+    origin: [cornerRadius, cornerRadius]
   }
 }
 
