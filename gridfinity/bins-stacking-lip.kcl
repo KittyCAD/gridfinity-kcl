@@ -56,7 +56,7 @@ const sides = patternCircular3d({
     (binLength + 2 * binTol) / 2,
     0
   ],
-  repetitions: 3,
+  instances: 4,
   rotateDuplicates: true
 }, singleSide)
 
@@ -83,7 +83,7 @@ const corners = patternCircular3d({
     (binLength + 2 * binTol) / 2,
     0
   ],
-  repetitions: 3,
+  instances: 4,
   rotateDuplicates: true
 }, singleCorner)
 
@@ -121,7 +121,7 @@ const magCutout000 = startSketchOn(singleBinFill, "start")
          (-binLength + 2 * binTol) / 2,
          (binLength + 2 * binTol) / 2
        ],
-       repetitions: 3,
+       instances: 4,
        rotateDuplicates: true
      }, %)
   |> extrude(-magDepth, %)
@@ -129,36 +129,36 @@ const magCutout000 = startSketchOn(singleBinFill, "start")
 // create the baseplate by patterning sides
 const binSides = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength + binTol * 2
      }, sides)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength + binTol * 2
      }, %)
 
 // create the corners of the baseplate by patterning the corners
 const binCorners = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength + binTol * 2
      }, corners)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength + binTol * 2
      }, %)
 
 // create the fill of the bin by patterning the corners
 const binFill = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength + binTol * 2
      }, singleBinFill)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength + binTol * 2
      }, %)
 
@@ -256,7 +256,7 @@ const lipLengths = patternCircular3d({
     (binLength + 2 * binTol) / 2 * countBinLength,
     0
   ],
-  repetitions: 1,
+  instances: 2,
   rotateDuplicates: true
 }, lipSingleLength)
 
@@ -269,7 +269,7 @@ const lipWidths = patternCircular3d({
     (binLength + 2 * binTol) / 2 * countBinLength,
     0
   ],
-  repetitions: 1,
+  instances: 2,
   rotateDuplicates: true
 }, lipSingleWidth)
 
@@ -296,7 +296,7 @@ const lipCorners000 = patternCircular3d({
     (binLength + 2 * binTol) / 2 * countBinLength,
     0
   ],
-  repetitions: 1,
+  instances: 2,
   rotateDuplicates: true
 }, lipSingleLengthCorner)
 
@@ -309,6 +309,6 @@ const lipCorners001 = patternCircular3d({
     (binLength + 2 * binTol) / 2 * countBinLength,
     0
   ],
-  repetitions: 1,
+  instances: 2,
   rotateDuplicates: true
 }, lipSingleWidthCorner)
