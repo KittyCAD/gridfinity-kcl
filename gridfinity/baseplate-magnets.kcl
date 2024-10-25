@@ -39,15 +39,15 @@ const sides = patternCircular3d({
   arcDegrees: 360,
   axis: [0, 0, 1],
   center: [binLength / 2, binLength / 2, 0],
-  repetitions: 3,
+  instances: 4,
   rotateDuplicates: true
 }, singleSide)
 
 // define an axis axis000
 const axis000 = {
   custom: {
-    axis: [0.0, 1.0, 0.0],
-    origin: [cornerRadius, cornerRadius, 0.0]
+    axis: [0.0, 1.0],
+    origin: [cornerRadius, cornerRadius]
   }
 }
 
@@ -59,31 +59,31 @@ const corners = patternCircular3d({
   arcDegrees: 360,
   axis: [0, 0, 1],
   center: [binLength / 2, binLength / 2, 0],
-  repetitions: 3,
+  instances: 4,
   rotateDuplicates: true
 }, singleCorner)
 
 // create the baseplate by patterning sides
 const basePlateSides = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength
      }, sides)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength
      }, %)
 
 // create the corners of the baseplate by patterning the corners
 const basePlateCorners = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength
      }, corners)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength
      }, %)
 
@@ -149,7 +149,7 @@ const magnetsSketch = startSketchOn('XY')
      }, %)
   |> patternCircular2d({
        center: [binLength / 2, binLength / 2],
-       repetitions: 3,
+       instances: 4,
        arcDegrees: 360,
        rotateDuplicates: true
      }, %)
@@ -190,23 +190,23 @@ const magnetCutoutExtrude = extrude(-magDepth, [magnetProfileNoMagnets])
 // pattern the magnet cutouts with holes
 patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength
      }, magnetHolesExtrude)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength
      }, %)
 
 // pattern the magnet cutouts without holes
 patternLinear3d({
        axis: [1.0, 0.0, 0.0],
-       repetitions: countBinWidth - 1,
+       instances: countBinWidth,
        distance: binLength
      }, magnetCutoutExtrude)
   |> patternLinear3d({
        axis: [0.0, 1.0, 0.0],
-       repetitions: countBinLength - 1,
+       instances: countBinLength,
        distance: binLength
      }, %)
