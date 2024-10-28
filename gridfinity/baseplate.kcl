@@ -2,22 +2,22 @@
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion
 
 // Number of bins in each direction
-const countBinWidth = 2
-const countBinLength = 3
+countBinWidth = 2
+countBinLength = 3
 
 // Define constants in millimeters (mm)
-const binLength = 42.0
-const cornerRadius = 4.0
-const firstStep = 0.7
-const secondStep = 1.8
-const thirdStep = 2.15
+binLength = 42.0
+cornerRadius = 4.0
+firstStep = 0.7
+secondStep = 1.8
+thirdStep = 2.15
 
 // The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 let height = firstStep + secondStep + thirdStep
 
 // define a function which builds the profile of the baseplate bin
 fn face = (plane) => {
-  const faceSketch = startSketchOn(plane)
+  faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
     |> yLine(height, %)
     |> angledLineOfYLength({ angle: -45, length: thirdStep }, %)
@@ -28,10 +28,10 @@ fn face = (plane) => {
 }
 
 // extrude a single side of the bin
-const singleSide = extrude(binLength - (cornerRadius * 2), face(offsetPlane("YZ", cornerRadius)))
+singleSide = extrude(binLength - (cornerRadius * 2), face(offsetPlane("YZ", cornerRadius)))
 
 // create the other sides of the bin by using a circular pattern
-const sides = patternCircular3d({
+sides = patternCircular3d({
   arcDegrees: 360,
   axis: [0, 0, 1],
   center: [binLength / 2, binLength / 2, 0],
@@ -40,7 +40,7 @@ const sides = patternCircular3d({
 }, singleSide)
 
 // define an axis axis000
-const axis000 = {
+axis000 = {
   custom: {
     axis: [0.0, 1.0],
     origin: [cornerRadius, cornerRadius]
@@ -48,10 +48,10 @@ const axis000 = {
 }
 
 // create a single corner of the bin
-const singleCorner = revolve({ angle: -90, axis: axis000 }, face(offsetPlane("YZ", cornerRadius)))
+singleCorner = revolve({ angle: -90, axis: axis000 }, face(offsetPlane("YZ", cornerRadius)))
 
 // create the corners of the bin
-const corners = patternCircular3d({
+corners = patternCircular3d({
   arcDegrees: 360,
   axis: [0, 0, 1],
   center: [binLength / 2, binLength / 2, 0],
@@ -60,7 +60,7 @@ const corners = patternCircular3d({
 }, singleCorner)
 
 // create the baseplate by patterning sides
-const basePlateSides = patternLinear3d({
+basePlateSides = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
        instances: countBinWidth,
        distance: binLength
@@ -72,7 +72,7 @@ const basePlateSides = patternLinear3d({
      }, %)
 
 // create the corners of the baseplate by patterning the corners
-const basePlateCorners = patternLinear3d({
+basePlateCorners = patternLinear3d({
        axis: [1.0, 0.0, 0.0],
        instances: countBinWidth,
        distance: binLength

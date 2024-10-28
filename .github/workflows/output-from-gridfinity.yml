@@ -1,4 +1,4 @@
-name: Output from KCL Samples
+name: Output from Gridfinity Defaults
 
 permissions:
     contents: write
@@ -9,7 +9,7 @@ on:
         paths:
             - '**/*.kcl'
             - '**/project.toml'
-            - .github/workflows/output-from-kcl-samples.yml
+            - .github/workflows/output-from-gridfinity.yml
         branches:
             - main
     push:
