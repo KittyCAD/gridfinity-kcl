@@ -32,7 +32,7 @@ height = firstStep + secondStep + thirdStep
 lipHeight = lipStep1 + lipStep2 + lipStep3 + lipStep4 + lipStep5
 
 // define a function which builds the profile of the baseplate bin
-fn face = (plane) => {
+fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([binBaseLength + binTol, 0], %)
     |> yLine(height, %)
@@ -182,7 +182,7 @@ binTop = startSketchOn(offsetPlane("XY", height))
   |> shell({ faces = ["end"], thickness = binThk }, %)
 
 // define a function which builds the profile of the baseplate bin
-fn lipFace = (plane) => {
+fn lipFace(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
     // |> yLine(lipHeight, %, $line100)
