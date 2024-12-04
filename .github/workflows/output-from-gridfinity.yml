@@ -12,9 +12,6 @@ on:
             - .github/workflows/output-from-gridfinity.yml
         branches:
             - main
-    push:
-        branches:
-            - main
     workflow_dispatch:
 
 jobs:
