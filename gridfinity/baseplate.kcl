@@ -17,7 +17,7 @@ thirdStep = 2.15
 height = firstStep + secondStep + thirdStep
 
 // define a function which builds the profile of the baseplate bin
-fn face = (plane) => {
+fn face(plane) {
   faceSketch = startSketchOn(plane)
     |> startProfileAt([0, 0], %)
     |> yLine(height, %)
