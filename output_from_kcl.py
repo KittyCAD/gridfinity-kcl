@@ -71,7 +71,7 @@ def get_units(kcl_path: Path) -> UnitLength:
     settings_path = kcl_path.parent / "project.toml"
     if not settings_path.exists():
         return kcl.UnitLength.Mm
- 
+
     with open(settings_path, "rb") as f:
         data = tomllib.load(f)
     try:
@@ -99,33 +99,47 @@ def snapshot(code: str, save_path: Path, unit_length: UnitLength = kcl.UnitLengt
 
 
 def process_single_kcl(kcl_path: Path) -> dict:
-    print(f"Processing {kcl_path.name}")
+    # The part name is the parent folder since each file is main.kcl
+    part_name = kcl_path.parent.name
+    src_name = kcl_path.parts[-3]
 
+    print(f"Processing {src_name}/{part_name}")
+
+    # determine units based on project.toml
     units = get_units(kcl_path)
 
+    # read the file to get the code as a string
     with open(kcl_path, "r") as inp:
         code = str(inp.read())
 
-    export_status = export_step(code=code, save_path=Path(__file__).parent / "step" / kcl_path.stem, unit_length=units)
+    # determine the root dir (e.g. /path/to/mcmmaster-carr)
+    root_dir = Path(__file__).parent
+    # step and screenshots for the part are based on the root dir
+    step_path = root_dir / "step" / part_name
+    screenshots_path = root_dir / "screenshots" / part_name
+
+    # attempt step export
+    export_status = export_step(code=code, save_path=step_path, unit_length=units)
     count = 1
     while not export_status and count < RETRIES:
-        export_status = export_step(code=code, save_path=Path(__file__).parent / "step" / kcl_path.stem,
-                                    unit_length=units)
+        export_status = export_step(code=code, save_path=step_path, unit_length=units)
         count += 1
 
-    snapshot_status = snapshot(code=code, save_path=Path(__file__).parent / "screenshots" / kcl_path.stem,
-                               unit_length=units)
+    # attempt screenshot
+    snapshot_status = snapshot(code=code, save_path=screenshots_path, unit_length=units)
     count = 1
     while not snapshot_status and count < RETRIES:
-        snapshot_status = snapshot(code=code, save_path=Path(__file__).parent / "screenshots" / kcl_path.stem,
-                                   unit_length=units)
+        snapshot_status = snapshot(code=code, save_path=screenshots_path, unit_length=units)
         count += 1
 
-    return {"filename": kcl_path.name, "export_status": export_status, "snapshot_status": snapshot_status}
+    # find relative paths, used for building the README.md
+    kcl_rel_path = kcl_path.relative_to(Path(__file__).parent)
+
+    return {"filename": f"{kcl_rel_path}", "export_status": export_status, "snapshot_status": snapshot_status}
 
 
 def main():
-    kcl_files = find_files(path=Path(__file__).parent, valid_suffixes=[".kcl"])
+    kcl_files = find_files(path=Path(__file__).parent, valid_suffixes=[".kcl"], name_pattern="main")
 
     # run concurrently
     with ProcessPoolExecutor(max_workers=5) as executor:
