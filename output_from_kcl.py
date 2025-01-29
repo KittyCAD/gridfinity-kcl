@@ -24,10 +24,11 @@ UNIT_MAP = {
 }
 
 
-def export_step(code: str, save_path: Path, unit_length: UnitLength = kcl.UnitLength.Mm) -> bool:
+def export_step(kcl_path: Path, save_path: Path, unit_length: UnitLength = kcl.UnitLength.Mm) -> bool:
+    # determine the current directory
     try:
         export_response = asyncio.run(
-            kcl.execute_and_export(code, unit_length, kcl.FileExportFormat.Step)
+            kcl.execute_and_export(str(kcl_path.parent), unit_length, kcl.FileExportFormat.Step)
         )
 
         stl_path = save_path.with_suffix(".step")
@@ -80,10 +81,10 @@ def get_units(kcl_path: Path) -> UnitLength:
         return kcl.UnitLength.Mm
 
 
-def snapshot(code: str, save_path: Path, unit_length: UnitLength = kcl.UnitLength.Mm) -> bool:
+def snapshot(kcl_path: Path, save_path: Path, unit_length: UnitLength = kcl.UnitLength.Mm) -> bool:
     try:
         snapshot_response = asyncio.run(
-            kcl.execute_and_snapshot(code, unit_length, kcl.ImageFormat.Png)
+            kcl.execute_and_snapshot(str(kcl_path.parent), unit_length, kcl.ImageFormat.Png)
         )
 
         image = Image.open(BytesIO(bytearray(snapshot_response)))
@@ -108,28 +109,24 @@ def process_single_kcl(kcl_path: Path) -> dict:
     # determine units based on project.toml
     units = get_units(kcl_path)
 
-    # read the file to get the code as a string
-    with open(kcl_path, "r") as inp:
-        code = str(inp.read())
-
-    # determine the root dir (e.g. /path/to/mcmmaster-carr)
+    # determine the root dir, which is where this python script
     root_dir = Path(__file__).parent
     # step and screenshots for the part are based on the root dir
     step_path = root_dir / "step" / part_name
     screenshots_path = root_dir / "screenshots" / part_name
 
     # attempt step export
-    export_status = export_step(code=code, save_path=step_path, unit_length=units)
+    export_status = export_step(kcl_path=kcl_path, save_path=step_path, unit_length=units)
     count = 1
     while not export_status and count < RETRIES:
-        export_status = export_step(code=code, save_path=step_path, unit_length=units)
+        export_status = export_step( kcl_path=kcl_path, save_path=step_path, unit_length=units)
         count += 1
 
     # attempt screenshot
-    snapshot_status = snapshot(code=code, save_path=screenshots_path, unit_length=units)
+    snapshot_status = snapshot(kcl_path=kcl_path, save_path=screenshots_path, unit_length=units)
     count = 1
     while not snapshot_status and count < RETRIES:
-        snapshot_status = snapshot(code=code, save_path=screenshots_path, unit_length=units)
+        snapshot_status = snapshot(kcl_path=kcl_path, save_path=screenshots_path, unit_length=units)
         count += 1
 
     # find relative paths, used for building the README.md
