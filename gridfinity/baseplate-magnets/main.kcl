@@ -1,12 +1,10 @@
 // Gridfinity Baseplate With Magnets
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This baseplate version includes holes for magnet placement
 
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm)
 
-// Number of bins in each direction
-countBinWidth = 2
-countBinLength = 3
-
-// Define constants in millimeters (mm)
+// Define constants
 binLength = 42.0
 cornerRadius = 4.0
 firstStep = 0.7
@@ -15,6 +13,10 @@ thirdStep = 2.15
 magOuterDiam = 6.5
 magOffset = 4.8
 magDepth = 2.4
+
+// Number of bins in each direction
+countBinWidth = 2
+countBinLength = 3
 
 // The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 height = firstStep + secondStep + thirdStep

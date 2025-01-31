@@ -1,13 +1,10 @@
 // Gridfinity Bins With A Stacking Lip
 // Gridfinity is a system to help you work more efficiently. This is a system invented by Zack Freedman. There are two main components the baseplate and the bins. The components are comprised of a matrix of squares. Allowing easy stacking and expansion. This Gridfinity bins version includes a lip to allowable stacking Gridfinity bins
 
+// Set units in millimeters (mm)
+@settings(defaultLengthUnit = mm)
 
-// Number of bins in each direction
-countBinWidth = 2
-countBinLength = 3
-countBinHeight = 1
-
-// Define constants in millimeters (mm)
+// Define constants
 binLength = 41.5
 binHeight = 7.0
 binBaseLength = 2.95
@@ -26,6 +23,11 @@ lipStep2 = 1.2
 lipStep3 = 0.7
 lipStep4 = 1.8
 lipStep5 = 1.9
+
+// Number of bins in each direction
+countBinWidth = 2
+countBinLength = 3
+countBinHeight = 1
 
 // The total height of the baseplate is a summation of the vertical heights of the baseplate steps
 height = firstStep + secondStep + thirdStep
