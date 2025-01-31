@@ -16,7 +16,7 @@ def export_step(kcl_path: Path, save_path: Path) -> bool:
     # determine the current directory
     try:
         export_response = asyncio.run(
-            kcl.execute_and_export(str(kcl_path.parent), kcl.UnitLength.Mm, kcl.FileExportFormat.Step)
+            kcl.execute_and_export(str(kcl_path.parent), kcl.FileExportFormat.Step)
         )
 
         stl_path = save_path.with_suffix(".step")
@@ -59,7 +59,7 @@ def find_files(
 def snapshot(kcl_path: Path, save_path: Path) -> bool:
     try:
         snapshot_response = asyncio.run(
-            kcl.execute_and_snapshot(str(kcl_path.parent), kcl.UnitLength.Mm, kcl.ImageFormat.Png)
+            kcl.execute_and_snapshot(str(kcl_path.parent), kcl.ImageFormat.Png)
         )
 
         image = Image.open(BytesIO(bytearray(snapshot_response)))
