@@ -29,12 +29,12 @@ fn face(plane) {
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
     |> yLine(-secondStep, %)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
-    |> close(%)
+    |> close()
   return faceSketch
 }
 
 // extrude a single side of the bin
-singleSide = extrude(binLength - (cornerRadius * 2), face(offsetPlane("YZ", cornerRadius)))
+singleSide = extrude(face(offsetPlane("YZ", cornerRadius)), length = binLength - (cornerRadius * 2), )
 
 // create the other sides of the bin by using a circular pattern
 sides = patternCircular3d({
@@ -128,7 +128,7 @@ fn magnetCenterCutout(plane) {
        }, %)
     |> xLine(-(2 * magOuterDiam - (firstStep + thirdStep) - (magOuterDiam / 2)), %)
     |> yLine(-(binLength - (4 * magOuterDiam)), %)
-    |> close(%)
+    |> close()
   return magnetSketch
 }
 
@@ -139,7 +139,7 @@ fn magnetBase(plane) {
     |> xLine(binLength, %, $line001)
     |> yLine(binLength, %, $line002)
     |> xLineTo(profileStartX(%), %, $line003)
-    |> close(%, $line004)
+    |> close(tag = $line004)
     |> hole(magnetCenterCutout(plane), %)
   return magnetBaseSketch
 }
@@ -162,7 +162,7 @@ magnetProfile = magnetBase("XY")
   |> hole(magnetsSketch, %)
 
 // create an extrusion of the magnet cutout with holes
-magnetHolesExtrude = extrude(-magDepth, magnetProfile)
+magnetHolesExtrude = extrude(magnetProfile, length = -magDepth)
 
 // add a fillet to the extrusion
 magnetHolesExtrudeFillets = fillet({
@@ -179,7 +179,7 @@ magnetHolesExtrudeFillets = fillet({
 magnetProfileNoMagnets = magnetBase(offsetPlane("XY", -magDepth))
 
 // create an extrusion of the magnet cutout without holes
-magnetCutoutExtrude = extrude(-magDepth, magnetProfileNoMagnets)
+magnetCutoutExtrude = extrude(magnetProfileNoMagnets, length = -magDepth)
 
 // add a fillet to the extrusion
 magnetCutoutExtrudeFillets = fillet({

@@ -35,12 +35,12 @@ fn face(plane) {
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
     |> yLine(-secondStep, %)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
-    |> close(%)
+    |> close()
   return faceSketch
 }
 
 // extrude a single side of the bin
-singleSide = extrude(binLength - (cornerRadius * 2), face(offsetPlane("YZ", cornerRadius + binTol)))
+singleSide = extrude(face(offsetPlane("YZ", cornerRadius + binTol)), length = binLength - (cornerRadius * 2), )
 
 // create the other sides of the bin by using a circular pattern
 sides = patternCircular3d({
@@ -87,11 +87,11 @@ singleBinFill = startSketchOn("XY")
        binBaseLength + binTol,
        binBaseLength + binTol
      ], %)
-  |> line([binLength - (binBaseLength * 2), 0], %, $line000)
-  |> line([0, binLength - (binBaseLength * 2)], %, $line001)
+  |> line(end = [binLength - (binBaseLength * 2), 0], tag = $line000)
+  |> line(end = [0, binLength - (binBaseLength * 2)], tag = $line001)
   |> xLineTo(profileStartX(%), %, $line002)
-  |> close(%, $line003)
-  |> extrude(height, %)
+  |> close(tag = $line003)
+  |> extrude(length = height)
   |> fillet({
        radius = firstStep,
        tags = [
@@ -119,7 +119,7 @@ magCutout000 = startSketchOn(singleBinFill, "start")
        instances = 4,
        rotateDuplicates = true
      }, %)
-  |> extrude(-magDepth, %)
+  |> extrude(length = -magDepth)
 
 // create the baseplate by patterning sides
 binSides = patternLinear3d({
@@ -163,8 +163,8 @@ binTop = startSketchOn(offsetPlane("XY", height))
   |> xLine((binLength + 2 * binTol) * countBinWidth, %, $line010)
   |> yLine((binLength + 2 * binTol) * countBinLength, %, $line011)
   |> xLineTo(profileStartX(%), %, $line012)
-  |> close(%, $line013)
-  |> extrude(binHeight * countBinHeight, %)
+  |> close(tag = $line013)
+  |> extrude(length = binHeight * countBinHeight)
   |> fillet({
        radius = cornerRadius,
        tags = [

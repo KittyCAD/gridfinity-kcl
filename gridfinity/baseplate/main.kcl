@@ -26,12 +26,12 @@ fn face(plane) {
     |> angledLineOfYLength({ angle = -45, length = thirdStep }, %)
     |> yLine(-secondStep, %)
     |> angledLineOfYLength({ angle = -45, length = firstStep }, %)
-    |> close(%)
+    |> close()
   return faceSketch
 }
 
 // extrude a single side of the bin
-singleSide = extrude(binLength - (cornerRadius * 2), face(offsetPlane("YZ", cornerRadius)))
+singleSide = extrude(face(offsetPlane("YZ", cornerRadius)), length = binLength - (cornerRadius * 2))
 
 // create the other sides of the bin by using a circular pattern
 sides = patternCircular3d({
