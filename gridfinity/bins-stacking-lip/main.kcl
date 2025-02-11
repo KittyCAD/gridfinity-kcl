@@ -181,7 +181,7 @@ binTop = startSketchOn(offsetPlane("XY", height))
          getPreviousAdjacentEdge(line012)
        ]
      }, %)
-  |> shell({ faces = ["end"], thickness = binThk }, %)
+  |> shell(faces = ["end"], thickness = binThk)
 
 // define a function which builds the profile of the baseplate bin
 fn lipFace(plane) {

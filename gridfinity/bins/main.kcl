@@ -157,7 +157,7 @@ binFill = patternLinear3d({
        distance = binLength + binTol * 2
      }, %)
 
-//
+// create the top of the bin
 binTop = startSketchOn(offsetPlane("XY", height))
   |> startProfileAt([0, 0], %)
   |> xLine((binLength + 2 * binTol) * countBinWidth, %, $line010)
@@ -174,4 +174,4 @@ binTop = startSketchOn(offsetPlane("XY", height))
          getPreviousAdjacentEdge(line012)
        ]
      }, %)
-  |> shell({ faces = ["end"], thickness = binThk }, %)
+  |> shell(faces = ["end"], thickness = binThk)
