@@ -74,6 +74,20 @@ def snapshot(kcl_path: Path, save_path: Path) -> bool:
         return False
 
 
+def update_step_file_dates(step_file_path: Path) -> None:
+    # https://github.com/KittyCAD/cli/blob/main/src/cmd_kcl.rs#L1092
+    regex = r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+\+\d{2}:\d{2}"
+    subst = r"1970-01-01T00:00:00.0+00:00"
+
+    with open(step_file_path, "r") as inp:
+        contents = inp.read()
+
+    contents = re.sub(regex, subst, contents)
+
+    with open(step_file_path, "w") as out:
+        out.write(contents)
+
+
 def process_single_kcl(kcl_path: Path) -> dict:
     # The part name is the parent folder since each file is main.kcl
     part_name = kcl_path.parent.name
@@ -114,6 +128,10 @@ def main():
     with ProcessPoolExecutor(max_workers=5) as executor:
         futures = [executor.submit(process_single_kcl, kcl_file) for kcl_file in kcl_files]
     results = [future.result() for future in futures]
+
+    step_files = find_files(path=Path(__file__).parent, valid_suffixes=[".step"])
+    with ProcessPoolExecutor(max_workers=5) as executor:
+        _ = [executor.submit(update_step_file_dates, step_file) for step_file in step_files]
 
     if False in [i["export_status"] for i in results]:
         comment_body = "The following files failed to export to STEP format:\n"
