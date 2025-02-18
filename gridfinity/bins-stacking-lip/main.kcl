@@ -47,10 +47,11 @@ fn face(plane) {
 }
 
 // extrude a single side of the bin
-singleSide = extrude(face(offsetPlane("YZ", cornerRadius + binTol)), length = binLength - (cornerRadius * 2))
+singleSide = extrude(face(offsetPlane("YZ", offset = cornerRadius + binTol)), length = binLength - (cornerRadius * 2))
 
 // create the other sides of the bin by using a circular pattern
-sides = patternCircular3d({
+sides = patternCircular3d(
+  singleSide,
   arcDegrees = 360,
   axis = [0, 0, 1],
   center = [
@@ -60,7 +61,7 @@ sides = patternCircular3d({
   ],
   instances = 4,
   rotateDuplicates = true
-}, singleSide)
+)
 
 // define an axis axis000
 axis000 = {
@@ -74,10 +75,11 @@ axis000 = {
 }
 
 // create a single corner of the bin
-singleCorner = revolve({ angle = -90, axis = axis000 }, face(offsetPlane("YZ", cornerRadius + binTol)))
+singleCorner = revolve({ angle = -90, axis = axis000 }, face(offsetPlane("YZ", offset = cornerRadius + binTol)))
 
 // create the corners of the bin
-corners = patternCircular3d({
+corners = patternCircular3d(
+  singleCorner,
   arcDegrees = 360,
   axis = [0, 0, 1],
   center = [
@@ -87,7 +89,7 @@ corners = patternCircular3d({
   ],
   instances = 4,
   rotateDuplicates = true
-}, singleCorner)
+)
 
 singleBinFill = startSketchOn("XY")
   |> startProfileAt([
@@ -117,7 +119,7 @@ magCutout000 = startSketchOn(singleBinFill, "start")
        ],
        radius = magOuterDiam / 2
      }, %)
-  |> patternCircular2d({
+  |> patternCircular2d(
        arcDegrees = 360,
        center = [
          (-binLength + 2 * binTol) / 2,
@@ -125,47 +127,50 @@ magCutout000 = startSketchOn(singleBinFill, "start")
        ],
        instances = 4,
        rotateDuplicates = true
-     }, %)
+     )
   |> extrude(length = -magDepth)
 
 // create the baseplate by patterning sides
-binSides = patternLinear3d({
+binSides = patternLinear3d(
+       sides,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
        distance = binLength + binTol * 2
-     }, sides)
-  |> patternLinear3d({
+     )
+  |> patternLinear3d(
        axis = [0.0, 1.0, 0.0],
        instances = countBinLength,
        distance = binLength + binTol * 2
-     }, %)
+     )
 
 // create the corners of the baseplate by patterning the corners
-binCorners = patternLinear3d({
+binCorners = patternLinear3d(
+       corners,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
        distance = binLength + binTol * 2
-     }, corners)
-  |> patternLinear3d({
+     )
+  |> patternLinear3d(
        axis = [0.0, 1.0, 0.0],
        instances = countBinLength,
        distance = binLength + binTol * 2
-     }, %)
+     )
 
 // create the fill of the bin by patterning the corners
-binFill = patternLinear3d({
+binFill = patternLinear3d(
+       singleBinFill,
        axis = [1.0, 0.0, 0.0],
        instances = countBinWidth,
        distance = binLength + binTol * 2
-     }, singleBinFill)
-  |> patternLinear3d({
+     )
+  |> patternLinear3d(
        axis = [0.0, 1.0, 0.0],
        instances = countBinLength,
        distance = binLength + binTol * 2
-     }, %)
+     )
 
 //
-binTop = startSketchOn(offsetPlane("XY", height))
+binTop = startSketchOn(offsetPlane("XY", offset = height))
   |> startProfileAt([0, 0], %)
   |> xLine((binLength + 2 * binTol) * countBinWidth, %, $line010)
   |> yLine((binLength + 2 * binTol) * countBinLength, %, $line011)
@@ -250,7 +255,8 @@ lipSingleLength = extrude(lipFace(plane000), length = binLength * countBinWidth 
 lipSingleWidth = extrude(lipFace(plane001), length = binLength * countBinLength - (2 * cornerRadius) + 2 * binTol * countBinLength)
 
 // create the other sides of the lips by using a circular pattern
-lipLengths = patternCircular3d({
+lipLengths = patternCircular3d(
+  lipSingleLength,
   arcDegrees = 360,
   axis = [0, 0, 1],
   center = [
@@ -260,10 +266,11 @@ lipLengths = patternCircular3d({
   ],
   instances = 2,
   rotateDuplicates = true
-}, lipSingleLength)
+)
 
 // create the other sides of the lips by using a circular pattern
-lipWidths = patternCircular3d({
+lipWidths = patternCircular3d(
+  lipSingleWidth,
   arcDegrees = 360,
   axis = [0, 0, 1],
   center = [
@@ -273,7 +280,7 @@ lipWidths = patternCircular3d({
   ],
   instances = 2,
   rotateDuplicates = true
-}, lipSingleWidth)
+)
 
 // define an axis axis000
 axis001 = {
@@ -290,7 +297,8 @@ lipSingleLengthCorner = revolve({ angle = -90, axis = axis001 }, lipFace(plane00
 lipSingleWidthCorner = revolve({ angle = 90, axis = axis001 }, lipFace(plane002))
 
 // create the corners of the bin
-lipCorners000 = patternCircular3d({
+lipCorners000 = patternCircular3d(
+  lipSingleLengthCorner,
   arcDegrees = 360,
   axis = [0, 0, 1],
   center = [
@@ -300,10 +308,11 @@ lipCorners000 = patternCircular3d({
   ],
   instances = 2,
   rotateDuplicates = true
-}, lipSingleLengthCorner)
+)
 
 // create the corners of the bin
-lipCorners001 = patternCircular3d({
+lipCorners001 = patternCircular3d(
+  lipSingleWidthCorner,
   arcDegrees = 360,
   axis = [0, 0, 1],
   center = [
@@ -313,4 +322,4 @@ lipCorners001 = patternCircular3d({
   ],
   instances = 2,
   rotateDuplicates = true
-}, lipSingleWidthCorner)
+)
